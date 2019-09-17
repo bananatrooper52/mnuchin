@@ -1,16 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
-<body style="background-color: black">
-    <canvas id="c" width="512" height="512" style="image-rendering:pixelated;position:fixed;left:128px;top:50%;transform:translate(0,-50%)"></canvas>
-    <div id="feedback-text" style="color:white;position:fixed;left:768px;top:50%;transform:translate(0,-50%);font-size:30px;font-family: Arial, Helvetica, sans-serif">
-        Talk to all the people on your journey to gain information
+
+<body style="background-color: black;font-family: Arial, Helvetica, sans-serif">
+    <div id="game-window" style="position:fixed;left:128px;height:512px;top:50%;transform:translate(0,-50%);width:90vw;display:flex">
+        <div style="position:relative">
+            <canvas id="c" width="512" height="512" style="image-rendering:pixelated;"></canvas>
+            <div id="death-screen" class="hidden"
+                style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index: 1;font-size:100px;color:red;font-weight:bold;text-align:center;">
+                You died D:</div>
+        </div>
+        <div id="feedback-text"
+            style="display:inline-block;color:white;margin-left:128px;font-size:30px;margin-right:128px;word-wrap:break-word">
+            Talk to all the people on your journey to gain information.
+        </div>
     </div>
     <script src="index.js"></script>
 </body>
+
 </html>

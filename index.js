@@ -1,8 +1,19 @@
 class Input {
     constructor(element) {
         this.keys = [];
+        this.mouse = {
+            down: false,
+            x: 0,
+            y: 0
+        }
         element.addEventListener("keydown", (e) => { this.keys[e.keyCode] = true; });
         element.addEventListener("keyup", (e) => { this.keys[e.keyCode] = false; });
+        element.addEventListener("mousedown", (e) => { this.mouse.down = true; });
+        element.addEventListener("mouseup", (e) => { this.mouse.down = false; });
+        element.addEventListener("mousemove", (e) => {
+            this.mouse.x = e.clientX - canvas.getBoundingClientRect().left;
+            this.mouse.y = e.clientY - canvas.getBoundingClientRect().top;
+        })
     }
 }
 
@@ -94,6 +105,9 @@ class Player extends Entity {
 
         this.input = input;
         this.controls = controls;
+        this.health = 5;
+
+        this.bulletCooldown = 0;
     }
 
     update(delta) {
@@ -102,6 +116,23 @@ class Player extends Entity {
         if (this.input.keys[this.controls.down]) this.moveY(speed * delta);
         if (this.input.keys[this.controls.left]) this.moveX(-speed * delta);
         if (this.input.keys[this.controls.right]) this.moveX(speed * delta);
+
+        if (boss.phase === 4) {
+            
+            this.bulletCooldown -= delta;
+            
+            if (this.input.mouse.down && this.bulletCooldown <= 0) {
+                let dx = this.input.mouse.x - player.x;
+                let dy = this.input.mouse.y - player.y;
+                let mag = Math.sqrt(dx * dx + dy * dy);
+                dx /= mag;
+                dy /= mag;
+
+                bullets.push(new Bullet(images["bullet"], this.x, this.y, dx, dy, true));
+                
+                this.bulletCooldown = 1;
+            }
+        }
     }
 
     render(ctx) {
@@ -166,6 +197,26 @@ class Scene {
     }
 }
 
+class Bullet extends Entity {
+    constructor(img, x, y, dx, dy, playerOwned) {
+        super(x, y, 32, 32);
+        this.img = img;
+        this.dx = dx;
+        this.dy = dy;
+        this.playerOwned = playerOwned;
+        this.speed = 250;
+        this.hit = false;
+    }
+
+    update(delta) {
+        this.move(this.dx * delta * this.speed, this.dy * delta * this.speed);
+    }
+
+    render(ctx) {
+        ctx.drawImage(this.img, this.x, this.y, 32, 32);
+    }
+}
+
 class Boss extends Entity {
     constructor(img, x, y) {
         super(x, y, 64, 64);
@@ -175,6 +226,7 @@ class Boss extends Entity {
         this.changeTarget();
         this.lastChangeTarget = 0;
         this.lastBulletShoot = 0;
+        this.health = 3;
     }
 
     update(delta) {
@@ -188,19 +240,33 @@ class Boss extends Entity {
                 }
                 break;
             case 2:
-                setFeedbackText("I am Steven Mnuchin! You think you can defeat me? Nobody can challenge me with money on my side!");
+                setFeedbackText("I am Steven Mnuchin! You think you can defeat me? Nobody can challenge me with money on my side!<br><br>Click to shoot!<br><br>Your HP - <span id='player-hp'>" + player.health + "</span><br>Mnuchin's HP - <span id='mnuchin-hp'>" + this.health + "</span>");
                 this.phase = 3;
-                setTimeout(() => { this.phase = 4 }, 1000);
+                setTimeout(() => { this.phase = 4 }, 5000);
                 break;
             case 4:
                 this.updateFight(delta);
+                if (this.health <= 0) this.phase = 5;
                 break;
-            case 7:
+            case 5:
+                setFeedbackText("Oh no! You've defeated me and my money! Bleh");
+                this.dieX = this.x;
+                this.timeSinceDeath = 0;
+                openBossDoors();
+                this.phase = 6;
+                break;
+            case 6:
+                this.timeSinceDeath += delta;
+                this.x = Math.sin(this.timeSinceDeath * 5) * 50 + this.dieX;
+                this.y -= 300 * delta;
                 break;
         }
     }
 
     updateFight(delta) {
+        document.getElementById("player-hp").innerHTML = player.health;
+        document.getElementById("mnuchin-hp").innerHTML = this.health;
+        
         this.lastChangeTarget += delta;
         if (this.lastChangeTarget >= 1) {
             this.lastChangeTarget = 0;
@@ -220,18 +286,18 @@ class Boss extends Entity {
     }
 
     shootBullet() {
-        let dx = this.x - player.x;
-        let dy = this.y - player.y;
+        let dx = player.x - this.x;
+        let dy = player.y - this.y;
         let mag = Math.sqrt(dx * dx + dy * dy);
         dx /= mag;
         dy /= mag;
 
-        bulllets.push(new Bullet(this.x, this.y, dx, dy));
+        bullets.push(new Bullet(images["bullet"], this.x, this.y, dx, dy, false));
     }
 
     changeTarget() {
-        this.tgtX = Math.random() * 6 * 64 + 64;
-        this.tgtY = Math.random() * 6 * 64 + 64;
+        this.tgtX = Math.random() * 5 * 64 + 64;
+        this.tgtY = Math.random() * 5 * 64 + 64;
     }
 
     render(ctx) {
@@ -252,6 +318,7 @@ let imagesReady = false;
 let images = {};
 let scenes = {};
 let currentScene = undefined;
+let bullets = [];
 
 function loadImage(name) {
     imgsToLoad++;
@@ -281,6 +348,8 @@ loadImage("floor");
 loadImage("npc");
 loadImage("mnuchin");
 loadImage("lock");
+loadImage("bullet");
+loadImage("sources");
 
 setImagesReady();
 
@@ -301,6 +370,7 @@ function addScene(name, scene) {
 function setCurrentScene(name, playerX, playerY) {
     currentScene = scenes[name];
     player.setPos(playerX, playerY);
+    bullets = [];
     console.log("Setting scene: " + name);
 }
 
@@ -328,6 +398,11 @@ function openBossDoors() {
     currentScene.setTile(7, 3, 0);
     currentScene.setTile(7, 4, 0);
     currentScene.setTile(7, 5, 0);
+}
+
+function die() {
+    console.log(document.getElementById("death-screen"));
+    document.getElementById("death-screen").classList.remove("hidden");
 }
 
 function run() {   
@@ -427,7 +502,21 @@ function run() {
     bossScene.addSceneTransition(new SceneTransitionRight("hall_5"));
     bossScene.addSceneTransition(new SceneTransitionLeft("prison"));
 
-    setCurrentScene("hall_5", 256 - 32, 256 - 32);
+    let prisonScene = addScene("prison", new Scene([
+        [1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0],
+        [1, 0, 0, 0, 0, 0, 0, 0],
+        [1, 0, 0, 0, 0, 0, 0, 0],
+        [1, 0, 0, 0, 0, 0, 0, 0],
+        [1, 0, 0, 0, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1],
+    ]));
+    prisonScene.addSceneTransition(new SceneTransitionRight("boss"));
+    prisonScene.addTextStation(new NPC(256 - 32, 256 - 32, "You saved me! I was thrown in here because I thought a different person would be good Secretary of the Treasury - Elon Musk. Now I know that sounds generic, but hear me out. Elon Musk is clearly good with money, as he's the 40th richest person in the world. But he's also been at the other end of the spectrum and experienced what it's like to live a hard life. He cares about creating job opportunities and making the world a better place.<br><br>Oops, I'm rambling. Well, now that I'm saved, let's get out of here!<br><br><br>The end!", images["npc"]));
+    prisonScene.addTextStation(new NPC(64, 64, "<span style='font-size:16px'>https://www.democracynow.org/2017/2/14/headlines/senate_confirms_steven_mnuchin_to_be_treasury_secretary<br>https://www.whitehouse.gov/people/steven-mnuchin/<br>https://ballotpedia.org/Steven_Mnuchin<br>https://theintercept.com/2017/01/03/treasury-nominee-steve-mnuchins-bank-accused-of-widespread-misconduct-in-leaked-memo/<br>https://en.wikipedia.org/wiki/Steven_Mnuchin<br></span>", images["sources"]));
+
+    setCurrentScene("start", 256 - 32, 256 - 32);
 
     function loop() {
         update(1 / 60);
@@ -471,6 +560,31 @@ function run() {
 
         if (currentScene === scenes["boss"]) {
             boss.update(delta);
+
+            for (let i = 0; i < bullets.length; i++) {
+                
+                let bullet = bullets[i];
+                
+                bullet.update(delta);
+
+                if (bullet.playerOwned) {
+                    if (!bullet.hit && Aabb.colliding(bullet, boss)) {
+                        bullet.hit = true;
+                        boss.health--;
+                    }
+                } else {
+                    if (!bullet.hit && Aabb.colliding(bullet, player)) {
+                        bullet.hit = true;
+                        player.health--;
+                    }
+    
+                    if (bullet.x < -100 || bullet.y < -100 || bullet.x > 612 || bullet.y > 612) {
+                        bullets.splice(i, 1);
+                        i--;
+                        console.log("bullet despawned");
+                    }
+                }
+            }
         }
     }
 
@@ -491,7 +605,14 @@ function run() {
         renderTransitions(ctx);
         //renderTransitionsDebug(ctx);
 
-        requestAnimationFrame(loop);
+        for (let i in bullets) {
+            bullets[i].render(ctx);
+        }
+
+        if (player.health > 0) requestAnimationFrame(loop);
+        else {
+            die();
+        }
     }
 
     function renderTransitions(ctx) {
