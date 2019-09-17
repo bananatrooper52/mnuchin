@@ -105,7 +105,7 @@ class Player extends Entity {
 
         this.input = input;
         this.controls = controls;
-        this.health = 5;
+        this.health = 10;
 
         this.bulletCooldown = 0;
     }
@@ -130,7 +130,7 @@ class Player extends Entity {
 
                 bullets.push(new Bullet(images["bullet"], this.x, this.y, dx, dy, true));
                 
-                this.bulletCooldown = 1;
+                this.bulletCooldown = 0.5;
             }
         }
     }
@@ -226,7 +226,7 @@ class Boss extends Entity {
         this.changeTarget();
         this.lastChangeTarget = 0;
         this.lastBulletShoot = 0;
-        this.health = 3;
+        this.health = 10;
     }
 
     update(delta) {
@@ -274,7 +274,7 @@ class Boss extends Entity {
             this.lastBulletShoot++;
         }
 
-        if (this.lastBulletShoot >= 3) {
+        if (this.lastBulletShoot >= 1) {
             this.lastBulletShoot = 0;
             this.shootBullet();
         }
@@ -350,6 +350,12 @@ loadImage("mnuchin");
 loadImage("lock");
 loadImage("bullet");
 loadImage("sources");
+loadImage("npc1");
+loadImage("npc2");
+loadImage("npc3");
+loadImage("npc4");
+loadImage("npc5");
+loadImage("npc6");
 
 setImagesReady();
 
@@ -417,7 +423,7 @@ function run() {
         [1, 1, 1, 1, 1, 1, 1, 1],
     ]));
     startScene.addSceneTransition(new SceneTransitionRight("hall_1"));
-    startScene.addTextStation(new NPC(128, 128, "Go through the hall and find the facts", images["npc"]));
+    startScene.addTextStation(new NPC(128, 128, "Go through the hall and find the facts", images["npc1"]));
 
     let hallScene1 = addScene("hall_1", new Scene([
         [2, 2, 2, 2, 2, 2, 2, 2],
@@ -431,7 +437,7 @@ function run() {
     ]));
     hallScene1.addSceneTransition(new SceneTransitionLeft("start"));
     hallScene1.addSceneTransition(new SceneTransitionRight("hall_2"));
-    hallScene1.addTextStation(new NPC(256 - 32, 128, "This is Steven Mnuchin's lair. You must defeat him!", images["npc"]));
+    hallScene1.addTextStation(new NPC(256 - 32, 128, "This is Steven Mnuchin's lair. You must defeat him!", images["npc2"]));
 
     let hallScene2 = addScene("hall_2", new Scene([
         [2, 2, 2, 2, 2, 2, 2, 2],
@@ -445,7 +451,7 @@ function run() {
     ]));
     hallScene2.addSceneTransition(new SceneTransitionLeft("hall_1"));
     hallScene2.addSceneTransition(new SceneTransitionRight("hall_3"));
-    hallScene2.addTextStation(new NPC(256 - 32, 128, "Steven Mnuchin is the Secretary of Treasury. His job is to keep the economy strong, create job opportunities, and protect against economic threats.<br><br>I also think he should be tasked with improving spending efficiency to help shrink that monstrous debt.", images["npc"]));
+    hallScene2.addTextStation(new NPC(256 - 32, 128, "Steven Mnuchin is the Secretary of Treasury. His job is to keep the economy strong, create job opportunities, and protect against economic threats.<br><br>I also think he should be tasked with improving spending efficiency to help shrink that monstrous debt.", images["npc3"]));
 
     let hallScene3 = addScene("hall_3", new Scene([
         [2, 1, 0, 0, 0, 0, 1, 2],
@@ -459,7 +465,7 @@ function run() {
     ]));
     hallScene3.addSceneTransition(new SceneTransitionLeft("hall_2"));
     hallScene3.addSceneTransition(new SceneTransitionTop("hall_4"));
-    hallScene3.addTextStation(new NPC(512 - 256, 512 - 256, "Would I have hired Mnuchin for the job? Probably not. He was an actor before, how's that for qualifications? And he also ran a sketchy bank that's been in trouble with the law. Not to mention, he was sued by Donald Trump himself regarding a loan for a Trump Tower.<br><br>In my opinion, the Secretary of Treasury should have more experience with low paying jobs in order to sympathize with less fortunate people. They also should have a good legal standing, something which Mnuchin lacks. There is a lot of conflict of interests with him.", images["npc"]));
+    hallScene3.addTextStation(new NPC(512 - 256, 512 - 256, "Would I have hired Mnuchin for the job? Probably not. He was an actor before, how's that for qualifications? And he also ran a sketchy bank that's been in trouble with the law. Not to mention, he was sued by Donald Trump himself regarding a loan for a Trump Tower.<br><br>In my opinion, the Secretary of Treasury should have more experience with low paying jobs in order to sympathize with less fortunate people. They also should have a good legal standing, something which Mnuchin lacks. There is a lot of conflict of interests with him.", images["npc4"]));
 
     let hallScene4 = addScene("hall_4", new Scene([
         [2, 1, 0, 0, 0, 0, 1, 2],
@@ -473,7 +479,7 @@ function run() {
     ]));
     hallScene4.addSceneTransition(new SceneTransitionBottom("hall_3"));
     hallScene4.addSceneTransition(new SceneTransitionTop("hall_5"));
-    hallScene4.addTextStation(new NPC(300, 100, "Mnuchin's grandfather was a diamond dealer. His father worked at Goldman Sachs, and so did he. His family has been rich for a long time, and he does jobs involving money because it's all he's ever known.<br><br>Mnuchin's wife is Louise Linton, who has also lived a privelaged life. Everyone close to him is rich.", images["npc"]));
+    hallScene4.addTextStation(new NPC(300, 100, "Mnuchin's grandfather was a diamond dealer. His father worked at Goldman Sachs, and so did he. His family has been rich for a long time, and he does jobs involving money because it's all he's ever known.<br><br>Mnuchin's wife is Louise Linton, who has also lived a privileged life. Everyone close to him is rich.", images["npc5"]));
 
     let hallScene5 = addScene("hall_5", new Scene([
         [2, 2, 2, 2, 2, 2, 2, 2],
@@ -487,7 +493,7 @@ function run() {
     ]));
     hallScene5.addSceneTransition(new SceneTransitionBottom("hall_4"));
     hallScene5.addSceneTransition(new SceneTransitionLeft("boss"));
-    hallScene5.addTextStation(new NPC(512 - 270, 270, "The previous Secretary of the Treasury was Jack Lew. He wasn't there for very long and didn't do much. He no longer works for the government.<br><br>The only reason that Mnuchin is Secretary of the Treasury now is because he was a lobbyist for Trump's presidential campaign.", images["npc"]));
+    hallScene5.addTextStation(new NPC(512 - 270, 270, "The previous Secretary of the Treasury was Jack Lew. He wasn't there for very long and didn't do much. He no longer works for the government.<br><br>The only reason that Mnuchin is Secretary of the Treasury now is because he was a lobbyist for Trump's presidential campaign.", images["npc6"]));
 
     let bossScene = addScene("boss", new Scene([
         [1, 1, 1, 1, 1, 1, 1, 1],
