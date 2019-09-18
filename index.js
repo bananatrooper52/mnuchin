@@ -13,7 +13,7 @@ class Input {
         element.addEventListener("mousemove", (e) => {
             this.mouse.x = e.clientX - canvas.getBoundingClientRect().left;
             this.mouse.y = e.clientY - canvas.getBoundingClientRect().top;
-        })
+        });
     }
 }
 
@@ -130,7 +130,7 @@ class Player extends Entity {
 
                 bullets.push(new Bullet(images["bullet"], this.x, this.y, dx, dy, true));
                 
-                this.bulletCooldown = 0.5;
+                this.bulletCooldown = 1;
             }
         }
     }
@@ -204,7 +204,7 @@ class Bullet extends Entity {
         this.dx = dx;
         this.dy = dy;
         this.playerOwned = playerOwned;
-        this.speed = 250;
+        this.speed = 350;
         this.hit = false;
     }
 
@@ -423,7 +423,7 @@ function run() {
         [1, 1, 1, 1, 1, 1, 1, 1],
     ]));
     startScene.addSceneTransition(new SceneTransitionRight("hall_1"));
-    startScene.addTextStation(new NPC(128, 128, "Go through the hall and find the facts", images["npc1"]));
+    startScene.addTextStation(new NPC(128, 128, "Go through the hall and find the facts.", images["npc1"]));
 
     let hallScene1 = addScene("hall_1", new Scene([
         [2, 2, 2, 2, 2, 2, 2, 2],
@@ -451,7 +451,7 @@ function run() {
     ]));
     hallScene2.addSceneTransition(new SceneTransitionLeft("hall_1"));
     hallScene2.addSceneTransition(new SceneTransitionRight("hall_3"));
-    hallScene2.addTextStation(new NPC(256 - 32, 128, "Steven Mnuchin is the Secretary of Treasury. His job is to keep the economy strong, create job opportunities, and protect against economic threats.<br><br>I also think he should be tasked with improving spending efficiency to help shrink that monstrous debt.", images["npc3"]));
+    hallScene2.addTextStation(new NPC(256, 128+150, "Steven Mnuchin is the Secretary of Treasury. His job is to keep the economy strong, create job opportunities, and protect against economic threats.<br><br>I also think he should be tasked with improving spending efficiency to help shrink the monstrous national debt.", images["npc3"]));
 
     let hallScene3 = addScene("hall_3", new Scene([
         [2, 1, 0, 0, 0, 0, 1, 2],
@@ -465,7 +465,7 @@ function run() {
     ]));
     hallScene3.addSceneTransition(new SceneTransitionLeft("hall_2"));
     hallScene3.addSceneTransition(new SceneTransitionTop("hall_4"));
-    hallScene3.addTextStation(new NPC(512 - 256, 512 - 256, "Would I have hired Mnuchin for the job? Probably not. He was an actor before, how's that for qualifications? And he also ran a sketchy bank that's been in trouble with the law. Not to mention, he was sued by Donald Trump himself regarding a loan for a Trump Tower.<br><br>In my opinion, the Secretary of Treasury should have more experience with low paying jobs in order to sympathize with less fortunate people. They also should have a good legal standing, something which Mnuchin lacks. There is a lot of conflict of interests with him.", images["npc4"]));
+    hallScene3.addTextStation(new NPC(512 - 256, 512 - 256, "Would I have hired Mnuchin for the job? Absolutely not. He was an actor before, how's that for qualifications? And he also ran a sketchy bank called OneWest that's been in trouble with the law for illegal foreclosures. Not to mention, he was sued by Donald Trump himself regarding a loan for a Trump Tower.<br><br>In my opinion, the Secretary of Treasury should have more experience with low paying jobs in order to sympathize with less fortunate people. They also should have a good legal standing, something which Mnuchin lacks. There is a lot of conflict of interests with him.", images["npc4"]));
 
     let hallScene4 = addScene("hall_4", new Scene([
         [2, 1, 0, 0, 0, 0, 1, 2],
@@ -479,7 +479,7 @@ function run() {
     ]));
     hallScene4.addSceneTransition(new SceneTransitionBottom("hall_3"));
     hallScene4.addSceneTransition(new SceneTransitionTop("hall_5"));
-    hallScene4.addTextStation(new NPC(300, 100, "Mnuchin's grandfather was a diamond dealer. His father worked at Goldman Sachs, and so did he. His family has been rich for a long time, and he does jobs involving money because it's all he's ever known.<br><br>Mnuchin's wife is Louise Linton, who has also lived a privileged life. Everyone close to him is rich.", images["npc5"]));
+    hallScene4.addTextStation(new NPC(300, 100, "Mnuchin's great grandfather was a diamond dealer. His father and brother worked at Goldman Sachs, and he rose in rank at Goldman Sachs because of his relations. His family has been rich for a long time, and he does jobs involving money because it's all he's ever known.<br><br>Mnuchin's wife is Louise Linton, who has also lived a privileged life. Everyone close to him is rich.", images["npc5"]));
 
     let hallScene5 = addScene("hall_5", new Scene([
         [2, 2, 2, 2, 2, 2, 2, 2],
@@ -493,7 +493,7 @@ function run() {
     ]));
     hallScene5.addSceneTransition(new SceneTransitionBottom("hall_4"));
     hallScene5.addSceneTransition(new SceneTransitionLeft("boss"));
-    hallScene5.addTextStation(new NPC(512 - 270, 270, "The previous Secretary of the Treasury was Jack Lew. He wasn't there for very long and didn't do much. He no longer works for the government.<br><br>The only reason that Mnuchin is Secretary of the Treasury now is because he was a lobbyist for Trump's presidential campaign.", images["npc6"]));
+    hallScene5.addTextStation(new NPC(512 - 270, 270, "The previous Secretary of the Treasury was Jack Lew. He wasn't there for very long and didn't do much. He no longer works for the government.<br><br>The only reason that Mnuchin is Secretary of the Treasury now is because he was a lobbyist for Trump's presidential campaign. He absolutely does not deserve the position. He uses government funds for personal endeavors, like when he took a government plane to Kentucky using public funds to see a solar eclipse. He doesn't really care about you, just himself and his friends.", images["npc6"]));
 
     let bossScene = addScene("boss", new Scene([
         [1, 1, 1, 1, 1, 1, 1, 1],
@@ -519,8 +519,8 @@ function run() {
         [1, 1, 1, 1, 1, 1, 1, 1],
     ]));
     prisonScene.addSceneTransition(new SceneTransitionRight("boss"));
-    prisonScene.addTextStation(new NPC(256 - 32, 256 - 32, "You saved me! I was thrown in here because I thought a different person would be good Secretary of the Treasury - Elon Musk. Now I know that sounds generic, but hear me out. Elon Musk is clearly good with money, as he's the 40th richest person in the world. But he's also been at the other end of the spectrum and experienced what it's like to live a hard life. He cares about creating job opportunities and making the world a better place.<br><br>Oops, I'm rambling. Well, now that I'm saved, let's get out of here!<br><br><br>The end!", images["npc"]));
-    prisonScene.addTextStation(new NPC(64, 64, "<span style='font-size:16px'>https://www.democracynow.org/2017/2/14/headlines/senate_confirms_steven_mnuchin_to_be_treasury_secretary<br>https://www.whitehouse.gov/people/steven-mnuchin/<br>https://ballotpedia.org/Steven_Mnuchin<br>https://theintercept.com/2017/01/03/treasury-nominee-steve-mnuchins-bank-accused-of-widespread-misconduct-in-leaked-memo/<br>https://en.wikipedia.org/wiki/Steven_Mnuchin<br></span>", images["sources"]));
+    prisonScene.addTextStation(new NPC(256 - 32, 256 - 32, "You saved me! I was thrown in here because I thought a different person would be good Secretary of the Treasury - Elon Musk. Now I know that sounds generic, but hear me out. Elon Musk is clearly good with money, as he's the 40th richest person in the world with nearly $20 billion to his name. But he's also been at the other end of the spectrum and experienced what it's like to live a hard life, as he grew up not necessarily poor, but without excessive wealth. He cares about creating job opportunities and making the world a better place.<br><br>Oops, I'm rambling. Well, now that I'm saved, let's get out of here!<br><br><br>The end!", images["npc"]));
+    prisonScene.addTextStation(new NPC(64, 64, "<span style='font-size:16px'>https://theintercept.com/2019/01/01/steve-mnuchin-treasury-secretary-stock-market/<br>https://www.democracynow.org/2017/2/14/headlines/senate_confirms_steven_mnuchin_to_be_treasury_secretary<br>https://www.whitehouse.gov/people/steven-mnuchin/<br>https://ballotpedia.org/Steven_Mnuchin<br>https://theintercept.com/2017/01/03/treasury-nominee-steve-mnuchins-bank-accused-of-widespread-misconduct-in-leaked-memo/<br>https://en.wikipedia.org/wiki/Steven_Mnuchin<br></span>", images["sources"]));
 
     setCurrentScene("start", 256 - 32, 256 - 32);
 
@@ -587,7 +587,6 @@ function run() {
                     if (bullet.x < -100 || bullet.y < -100 || bullet.x > 612 || bullet.y > 612) {
                         bullets.splice(i, 1);
                         i--;
-                        console.log("bullet despawned");
                     }
                 }
             }
